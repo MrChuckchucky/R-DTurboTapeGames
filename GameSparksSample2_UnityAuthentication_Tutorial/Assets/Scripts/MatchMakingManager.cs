@@ -27,6 +27,10 @@ public class MatchMakingManager : MonoBehaviour
         {
             RankedMatch();
         }
+        if(Input.GetKeyDown(KeyCode.A))
+        {
+            StartCoroutine(FindChallenge());
+        }
 	}
 
     void RankedMatch()
@@ -49,6 +53,7 @@ public class MatchMakingManager : MonoBehaviour
     void OnMatchFound(GameSparks.Api.Messages.MatchFoundMessage message)
     {
         StopCoroutine("ResearchMatch");
+        debug.GetComponent<Text>().text = "";
         string matchId = message.MatchId;
         found = true;
         bool first = false;
@@ -70,20 +75,20 @@ public class MatchMakingManager : MonoBehaviour
         }
         if(UserManager.instance.isFirst)
         {
-            StartCoroutine(FindChallenge());
+            CreateChallenge();
         }
         else
         {
-            CreateChallenge(matchId);
+            StartCoroutine(FindChallenge());
         }
     }
 
-    void CreateChallenge(string ID)
+    void CreateChallenge()
     {
         List<string> opponents = new List<string>();
         opponents.Add(UserManager.instance.opponentId);
         DateTime date = DateTime.Today.AddDays(1);
-        new CreateChallengeRequest().SetChallengeShortCode("RankedChallenge").SetAccessType("PRIVATE").SetAutoStartJoinedChallengeOnMaxPlayers(true).SetUsersToChallenge(opponents).SetEndTime(date).Send((response) =>
+        new CreateChallengeRequest().SetChallengeShortCode("RankedChallenge").SetAccessType("PRIVATE").SetStartTime(DateTime.Today.AddDays(1)).SetAutoStartJoinedChallengeOnMaxPlayers(true).SetUsersToChallenge(opponents).SetEndTime(date).Send((response) =>
         {
             if(response.HasErrors)
             {
@@ -98,19 +103,20 @@ public class MatchMakingManager : MonoBehaviour
         });
     }
 
+    void CurrentChallenge()
+    {
+        new ListChallengeRequest().SetState("RUNNING").Send((response) =>
+        {
+
+        });
+    }
+
     IEnumerator FindChallenge()
     {
         bool valid = false;
-        List<string> states = new List<string>();
-        //states.Add("WAITING");
-        states.Add("RUNNING");
-        /*states.Add("ISSUED");
-        states.Add("RECEIVED");
-        states.Add("COMPLETE");
-        states.Add("DECLINED");*/
         while (!valid)
         {
-            new ListChallengeRequest().SetStates(states).Send((response) =>
+            new ListChallengeRequest().SetState("ISSUED").Send((response) =>
             {
                 foreach (var challenge in response.ChallengeInstances)
                 {
