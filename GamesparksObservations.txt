@@ -1,0 +1,34 @@
+MatchMaking Percent: 
+	-Min : percent under your skill level
+	-Max : percent over your skill level
+MatchMaking Relative :
+	-Min : skill level's points under your skill level
+	-Max : skill level's points over your skill level
+MatchMakingRequest :
+	-action : not required, work without this line (not empty, just don't write action if you don't have one)
+	-create a room : all players have to fit with each other to create a match
+		Example :
+			player1 skill level : 10
+			player2 skill level : 20
+			MatchMaking : percent, min : 0, max : 500
+			player1 will found player2, but player2 will not find player1, so the match don't start
+
+Tutoriel GameSparks TicTacToe with registration, authentication, link with friend (facebook), send and receive gamestate : https://docs.gamesparks.net/tutorials/unity-tutorials-challenges-part-1-introduction
+Many problems are solved in this topic (because of an update of the facebook SDK) : http://forum.unity3d.com/threads/can-someone-help-me-with-gamesparks-fb-login.387762/
+
+
+The Status of a challenge change if certains conditions are reach. At the creation of a challenge, you have to set the startTime and the status will be "ISSUED".
+When the MaxPlayer parameters is reach (set at the creation of the challenge and/or in the MatchMaking) and the startTime isn't, the status will be "WAITING".
+When MinPlayer the StartTime are reach, the status will be "RUNNING". You can manually force the beginning of a challenge in the Cloud Code with challenge.startChallenge(); (see GlobalMessage ChallengeWaitingMessage)
+The ScriptData contain all customizable values
+/!\ You can't change the ScriptData if the challenge isn't in the "RUNNING" status.
+You have to create the data to send in the Cloud Code in the Global Message ChallengeIssuedMessage or in the ChallengeWaitingMessage
+/!\ To get the ScriptData client side, you have to write : gameBoard = response.Challenge.ScriptData.GetStringList("gameBoard").ToArray();
+
+If you receive this message when you try to change the game state : 
+{"message":"TypeError: Cannot read property \"challengeId\" from undefined (challengeEvent/LifeCount.js#8)"}
+Try to change the line
+var challenge = Spark.data.challenge.challengeId
+to
+var challenge = Spark.getChallenge(Spark.getData().challengeInstanceId);
+(see ChallengeEvent LifeCount)
