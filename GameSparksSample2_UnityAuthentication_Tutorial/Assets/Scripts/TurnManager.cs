@@ -16,11 +16,12 @@ public class TurnManager : MonoBehaviour
 
     int kill;
     public GameObject player;
+    public GameObject opponent;
     public string challengeInstanceId = "";
 
     public void EndTurn()
     {
-        string pos = "{x = " + player.transform.position.x + ", y = " + player.transform.position.y + ", z = " + player.transform.position.z + "}";
+        string pos = "{x = " + player.transform.position.x + "; y = " + player.transform.position.y + "; z = " + player.transform.position.z + "}";
         new LogChallengeEventRequest().SetChallengeInstanceId(challengeInstanceId).SetEventKey("LifeCount").SetEventAttribute("pid",UserManager.instance.userId).SetEventAttribute("kill",kill).SetEventAttribute("pos", pos).Send((response) =>
         {
             if(response.HasErrors)
@@ -30,6 +31,8 @@ public class TurnManager : MonoBehaviour
             else
             {
                 Debug.Log("success");
+                GroundManager.instance.Reinit();
+                player.GetComponent<PlayerControl>().StartCoroutine("Check");
             }
         });
     }

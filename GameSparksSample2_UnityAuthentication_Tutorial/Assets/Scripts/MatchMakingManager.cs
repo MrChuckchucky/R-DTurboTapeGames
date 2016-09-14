@@ -11,13 +11,29 @@ using System;
 
 public class MatchMakingManager : MonoBehaviour
 {
-    GameObject debug;
+    public static MatchMakingManager instance;
+
+    void Awake()
+    {
+        if(instance == null)
+        {
+            instance = this;
+        }
+    }
+
+    public GameObject debug;
     bool found;
+    public string challengeId;
+    string opponentId;
+    string opponentName;
+    GameObject popUp;
     
     void Start()
     {
         GameSparks.Api.Messages.MatchFoundMessage.Listener += OnMatchFound;
         debug = GameObject.FindGameObjectWithTag("Debug");
+        CurrentChallenge();
+        popUp = GameObject.FindGameObjectWithTag("Continue");
     }
 
 	// Use this for initialization
@@ -87,8 +103,8 @@ public class MatchMakingManager : MonoBehaviour
     {
         List<string> opponents = new List<string>();
         opponents.Add(UserManager.instance.opponentId);
-        DateTime date = DateTime.Today.AddDays(1);
-        new CreateChallengeRequest().SetChallengeShortCode("RankedChallenge").SetAccessType("PRIVATE").SetStartTime(DateTime.Today.AddDays(1)).SetAutoStartJoinedChallengeOnMaxPlayers(true).SetUsersToChallenge(opponents).SetEndTime(date).Send((response) =>
+        DateTime date = DateTime.Today.AddMonths(1);
+        new CreateChallengeRequest().SetChallengeShortCode("RankedChallenge").SetAccessType("PRIVATE").SetStartTime(DateTime.Today.AddDays(1)).SetMaxPlayers(2).SetAutoStartJoinedChallengeOnMaxPlayers(false).SetUsersToChallenge(opponents).SetEndTime(date).Send((response) =>
         {
             if(response.HasErrors)
             {
@@ -97,18 +113,58 @@ public class MatchMakingManager : MonoBehaviour
             else
             {
                 TurnManager.instance.challengeInstanceId = response.ChallengeInstanceId;
-                Debug.Log(response.ChallengeInstanceId);
-                GroundManager.instance.Generation();
+                StartCoroutine(FindChallenge());
+                //GroundManager.instance.Generation();
             }
         });
     }
 
     void CurrentChallenge()
     {
-        new ListChallengeRequest().SetState("RUNNING").Send((response) =>
+        int index = 0;
+        List<string> states = new List<string>();
+        states.Add("RUNNING");
+        new ListChallengeRequest().SetStates(states).Send((response) =>
         {
-
+            foreach(var challenge in response.ChallengeInstances)
+            {
+                if(challenge.NextPlayer == UserManager.instance.userId)
+                {
+                    index++;
+                    if(index == 1)
+                    {
+                        challengeId = challenge.ChallengeId;
+                        if (challenge.Challenger.Id != UserManager.instance.userId)
+                        {
+                            opponentId = challenge.Challenger.Id;
+                            opponentName = challenge.Challenger.Name;
+                        }
+                        else
+                        {
+                            UserManager.instance.isFirst = true;
+                            foreach (var player in challenge.Challenged)
+                            {
+                                if (player.Id != UserManager.instance.userId)
+                                {
+                                    opponentId = player.Id;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Debug.Log(index + " challenges to play");
+            if(index > 0)
+            {
+                SpawnPopUp();
+            }
         });
+    }
+
+    void SpawnPopUp()
+    {
+        debug.GetComponent<Text>().text = "Continue against " + opponentName + " ?";
+        popUp.GetComponent<ContinueChallenge>().Enable(true);
     }
 
     IEnumerator FindChallenge()
@@ -149,6 +205,24 @@ public class MatchMakingManager : MonoBehaviour
             debug.GetComponent<Text>().text = "ResearchMatch..";
             yield return new WaitForSeconds(0.5f);
             debug.GetComponent<Text>().text = "ResearchMatch...";
+            yield return new WaitForSeconds(0.5f);
+        }
+        debug.GetComponent<Text>().text = "";
+    }
+
+    public IEnumerator LoadInformations()
+    {
+        int index = 0;
+        while (index != 30)
+        {
+            index++;
+            debug.GetComponent<Text>().text = "LoadInformations";
+            yield return new WaitForSeconds(0.5f);
+            debug.GetComponent<Text>().text = "LoadInformations.";
+            yield return new WaitForSeconds(0.5f);
+            debug.GetComponent<Text>().text = "LoadInformations..";
+            yield return new WaitForSeconds(0.5f);
+            debug.GetComponent<Text>().text = "LoadInformations...";
             yield return new WaitForSeconds(0.5f);
         }
         debug.GetComponent<Text>().text = "";
