@@ -16,10 +16,10 @@ public class GroundManager : MonoBehaviour
     GameObject ground;
     GameObject groundsParent;
     public GameObject[,] theGround;
-
-	// Use this for initialization
+    
 	public void Generation()
     {
+        //Create the ground
         theGround = new GameObject[5, 5];
         ground = Resources.Load("Ground") as GameObject;
         groundsParent = GameObject.FindGameObjectWithTag("GroundsParent");
@@ -38,6 +38,7 @@ public class GroundManager : MonoBehaviour
 
     IEnumerator SpawnTime()
     {
+        //Spawn the players with a delay because of the create of datas on the server
         StartCoroutine(MatchMakingManager.instance.LoadInformations());
         yield return new WaitForSeconds(60);
         StopCoroutine(MatchMakingManager.instance.LoadInformations());
@@ -47,6 +48,7 @@ public class GroundManager : MonoBehaviour
 
     public void Regeneration()
     {
+        //Generate the ground but their isn't loading time, because who don't need to wait the creation of the datas
         theGround = new GameObject[5, 5];
         ground = Resources.Load("Ground") as GameObject;
         groundsParent = GameObject.FindGameObjectWithTag("GroundsParent");
@@ -65,6 +67,7 @@ public class GroundManager : MonoBehaviour
 
     void Spawn()
     {
+        //Spawn and place the characters at their spawn spot. They are move after if the positions change
         if(UserManager.instance.isFirst)
         {
             GameObject player = GameObject.Instantiate(Resources.Load("Player"), new Vector3(0, 1, 0), Quaternion.identity) as GameObject;
@@ -88,6 +91,7 @@ public class GroundManager : MonoBehaviour
 
     public void Reinit()
     {
+        //Recolor the ground after the end of the turn
         foreach(GameObject oneGround in theGround)
         {
             oneGround.GetComponent<Renderer>().material.color = Color.white;
@@ -96,6 +100,7 @@ public class GroundManager : MonoBehaviour
 
     public void Mouvement(float indexX, float indexY)
     {
+        //Color the ground to show to the player where he can move
         int posX = int.Parse(Mathf.RoundToInt(indexX).ToString());
         int posY = int.Parse(Mathf.RoundToInt(indexY).ToString());
         if (posX > 0)

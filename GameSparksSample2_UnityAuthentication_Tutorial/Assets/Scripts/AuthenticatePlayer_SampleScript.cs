@@ -10,13 +10,14 @@ public class AuthenticatePlayer_SampleScript : MonoBehaviour
 
     void Start()
     {
+        //Get the text box
         userName = GameObject.FindGameObjectWithTag("AuthUserName");
         password = GameObject.FindGameObjectWithTag("AuthPassword");
     }
 	
 	public void AuthorizePlayerBttn()
 	{
-		Debug.Log ("Authorizing Player...");
+        //Send an authentication request with an account
         new GameSparks.Api.Requests.AuthenticationRequest()
             .SetUserName (userName.transform.GetChild(2).GetComponent<Text>().text)
 			.SetPassword (password.transform.GetChild(2).GetComponent<Text>().text)
@@ -37,7 +38,7 @@ public class AuthenticatePlayer_SampleScript : MonoBehaviour
 
 	public void AuthenticateDeviceBttn()
 	{
-		Debug.Log ("Authenticating Device...");
+        //Request to authenticate yourself with your device. Not reachable in the prototype
 		new GameSparks.Api.Requests.DeviceAuthenticationRequest ()
 			.SetDisplayName ("Randy")
 			.Send ((response) => {

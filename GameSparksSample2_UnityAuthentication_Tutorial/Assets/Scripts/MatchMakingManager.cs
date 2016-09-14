@@ -30,31 +30,31 @@ public class MatchMakingManager : MonoBehaviour
     
     void Start()
     {
+        //Observer to look for a match
         GameSparks.Api.Messages.MatchFoundMessage.Listener += OnMatchFound;
         debug = GameObject.FindGameObjectWithTag("Debug");
+        //Check if you have challenge to play
         CurrentChallenge();
         popUp = GameObject.FindGameObjectWithTag("Continue");
     }
-
-	// Use this for initialization
+    
 	void Update ()
     {
+        //Manually launch the MatchMaking
         if (Input.GetKeyDown(KeyCode.Space))
         {
             RankedMatch();
-        }
-        if(Input.GetKeyDown(KeyCode.A))
-        {
-            StartCoroutine(FindChallenge());
         }
 	}
 
     void RankedMatch()
     {
+        //Look for a potential opponent for a RankedMatch
         new GameSparks.Api.Requests.MatchmakingRequest().SetMatchShortCode("RankedMatch").SetSkill(100).Send((response) =>
             {
                 if (!response.HasErrors)
                 {
+                    //Show you that the game don't crash
                     StartCoroutine("ResearchMatch");
                 }
                 else
@@ -68,6 +68,7 @@ public class MatchMakingManager : MonoBehaviour
 
     void OnMatchFound(GameSparks.Api.Messages.MatchFoundMessage message)
     {
+        //When a match is found
         StopCoroutine("ResearchMatch");
         debug.GetComponent<Text>().text = "";
         string matchId = message.MatchId;
@@ -85,6 +86,7 @@ public class MatchMakingManager : MonoBehaviour
             }
             if(UserManager.instance.userId != player.Id)
             {
+                //Get opponnent informations
                 UserManager.instance.opponentId = player.Id;
                 UserManager.instance.opponentName = player.DisplayName;
             }
@@ -101,6 +103,7 @@ public class MatchMakingManager : MonoBehaviour
 
     void CreateChallenge()
     {
+        //Request to create a challenge against the opponent found with the MatchMaking
         List<string> opponents = new List<string>();
         opponents.Add(UserManager.instance.opponentId);
         DateTime date = DateTime.Today.AddMonths(1);
@@ -114,13 +117,13 @@ public class MatchMakingManager : MonoBehaviour
             {
                 TurnManager.instance.challengeInstanceId = response.ChallengeInstanceId;
                 StartCoroutine(FindChallenge());
-                //GroundManager.instance.Generation();
             }
         });
     }
 
     void CurrentChallenge()
     {
+        //Request to get the first 50 current challenge
         int index = 0;
         List<string> states = new List<string>();
         states.Add("RUNNING");
@@ -133,6 +136,7 @@ public class MatchMakingManager : MonoBehaviour
                     index++;
                     if(index == 1)
                     {
+                        //Get information about your opponent
                         challengeId = challenge.ChallengeId;
                         if (challenge.Challenger.Id != UserManager.instance.userId)
                         {
@@ -147,13 +151,13 @@ public class MatchMakingManager : MonoBehaviour
                                 if (player.Id != UserManager.instance.userId)
                                 {
                                     opponentId = player.Id;
+                                    opponentName = player.Name;
                                 }
                             }
                         }
                     }
                 }
             }
-            Debug.Log(index + " challenges to play");
             if(index > 0)
             {
                 SpawnPopUp();
@@ -163,12 +167,14 @@ public class MatchMakingManager : MonoBehaviour
 
     void SpawnPopUp()
     {
+        //PopUp message to continue the first challenge you can play
         debug.GetComponent<Text>().text = "Continue against " + opponentName + " ?";
         popUp.GetComponent<ContinueChallenge>().Enable(true);
     }
 
     IEnumerator FindChallenge()
     {
+        //Check every 2 seconds for the challenge create with the MatchMaking
         bool valid = false;
         while (!valid)
         {
@@ -194,6 +200,7 @@ public class MatchMakingManager : MonoBehaviour
 
     IEnumerator ResearchMatch()
     {
+        //Just show you that the game don't crash when you launch the MatchMaking
         int index = 0;
         while(!found && index < 30)
         {
@@ -212,6 +219,7 @@ public class MatchMakingManager : MonoBehaviour
 
     public IEnumerator LoadInformations()
     {
+        //Just show you that the game don't crash when you LoadInformation
         int index = 0;
         while (index != 30)
         {

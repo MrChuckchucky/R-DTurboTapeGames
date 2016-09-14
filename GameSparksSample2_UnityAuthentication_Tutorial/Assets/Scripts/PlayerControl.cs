@@ -11,8 +11,10 @@ public class PlayerControl : MonoBehaviour
 	void Start ()
     {
         gameBoard = new string[6];
+        //Request to load information from the server
         new GetChallengeRequest().SetChallengeInstanceId(TurnManager.instance.challengeInstanceId).Send((response) =>
         {
+            //gameBoard is the values that the server store
             gameBoard = response.Challenge.ScriptData.GetStringList("gameBoard").ToArray();
             if (response.HasErrors)
             {
@@ -20,23 +22,12 @@ public class PlayerControl : MonoBehaviour
             }
             else
             {
-                if (response.Challenge.NextPlayer == null && response.Challenge.Challenger.Id == UserManager.instance.userId)
-                {
-                    UserManager.instance.isFirst = true;
-                    canPlay = true;
-                }
-                else if (response.Challenge.NextPlayer == null)
-                {
-                    UserManager.instance.isFirst = false;
-                }
-                else if (response.Challenge.NextPlayer == UserManager.instance.userId)
+                //Check if it's your turn
+                if (response.Challenge.NextPlayer == UserManager.instance.userId)
                 {
                     canPlay = true;
                 }
-                if (GroundManager.instance.theGround == null)
-                {
-                    GroundManager.instance.Generation();
-                }
+                //Place the player at the right place and your player is always the red and the blue is always your opponnent
                 if (UserManager.instance.userId == gameBoard[0])
                 {
                     Replace(gameBoard[2], TurnManager.instance.player);
@@ -47,6 +38,7 @@ public class PlayerControl : MonoBehaviour
                     Replace(gameBoard[5], TurnManager.instance.player);
                     Replace(gameBoard[2], TurnManager.instance.opponent);
                 }
+                //If it's not your turn, check every 10 seconds if your opponent have played
                 if(!canPlay)
                 {
                     StartCoroutine(Check());
@@ -55,6 +47,7 @@ public class PlayerControl : MonoBehaviour
         });
 	}
 
+    //Transform the string into position value
     void Replace(string pos, GameObject subject)
     {
         string[] position = pos.Split(';');
@@ -74,6 +67,7 @@ public class PlayerControl : MonoBehaviour
         float x = float.Parse(posX[1]);
         float y = float.Parse(posY[1]);
         float z = float.Parse(interZ);
+        //Change the position of the characters with the informations from the server
         subject.transform.position = new Vector3(x, y, z);
     }
 	
@@ -81,12 +75,14 @@ public class PlayerControl : MonoBehaviour
     {
         if (canPlay)
         {
+            //Change the color of the ground where you can move
             Vector3 pos = TurnManager.instance.player.transform.position;
             GroundManager.instance.Mouvement(pos.x, pos.z);
             canPlay = false;
         }
         if(Input.GetMouseButtonDown(0))
         {
+            //Move your character if you clic on a blue ground
             RaycastHit hit;
             if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit))
             {
@@ -100,11 +96,13 @@ public class PlayerControl : MonoBehaviour
 
     public IEnumerator Check()
     {
+        //Send a request every 10 seconds to know if your opponnent have played
         bool valid = false;
         while(!valid)
         {
             new GetChallengeRequest().SetChallengeInstanceId(TurnManager.instance.challengeInstanceId).Send((response) =>
             {
+                //Get the new gameBoard
                 gameBoard = response.Challenge.ScriptData.GetStringList("gameBoard").ToArray();
                 if (response.HasErrors)
                 {
@@ -112,10 +110,14 @@ public class PlayerControl : MonoBehaviour
                 }
                 else
                 {
+                    //If it's your turn
                     if(response.Challenge.NextPlayer == UserManager.instance.userId)
                     {
+                        //Stop the coroutine
                         valid = true;
+                        //Set up your movement
                         canPlay = true;
+                        //Change the position of the characters
                         if (UserManager.instance.userId == gameBoard[0])
                         {
                             Replace(gameBoard[2], TurnManager.instance.player);

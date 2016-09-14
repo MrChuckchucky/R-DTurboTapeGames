@@ -12,8 +12,8 @@ public class UserManager : MonoBehaviour
             instance = this;
         }
     }
-
-	//These are the account details we want to pull in
+    
+    //Usefull informations
 	public string userName;
 	public string userId;
     public string opponentName;
@@ -28,15 +28,14 @@ public class UserManager : MonoBehaviour
 
 	public void UpdateInformation()
 	{
-		//We send an AccountDetailsRequest
+		//We send an AccountDetailsRequest to get the informations of the authenticate player
 		new AccountDetailsRequest().Send((response) =>
 		{
-			//We pass the details we want from our response to the function which will update our information
-			UpdateGUI(response.DisplayName, response.UserId);
+			UpdateInformations(response.DisplayName, response.UserId);
 		});
 	}
 
-	public void UpdateGUI(string name, string uid)
+	public void UpdateInformations(string name, string uid)
 	{
 		userName = name;
 		userId = uid;
