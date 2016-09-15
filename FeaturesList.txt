@@ -1,0 +1,19 @@
+GameSparks 
+
+	-MatchMaking => MatchMakingManager :
+		ContinueChallenge => void CurrentChallenge line 126 => if found, void SpawnPopUp line 174 to accept the first of them else SearchMatch
+		SearchMatch => public void RankedMatch line 52 => MatchFound
+		MatchFound => void OnMatchFound line 71 => if player 1 CreateChallenge else FindChallenge
+		CreateChallenge => void CreateChallenge line 106 => FindChallenge
+		FindChallenge => IEnumerator FindChallenge line 181 => ChallengeFound line 191
+
+	-TurnBased => PlayerControl :
+		LoadInformations => First in the Start line 12, then Check
+		Check => public IEnumerator Check line 100 for "real-time" game
+
+	-GameState => TurnManager :
+		SaveGameState => public void EndTurn line 29
+
+	-Register/Authenticate
+		Register => RegisterPlayer_SampleScript => public void RegisterPlayerBttn line 19
+		Authenticate => AuthenticatePlayer_SampleScript => public void AuthenticatePlayerBttn line 18
