@@ -7,9 +7,11 @@ public class PlayerControl : MonoBehaviour
 {
     bool canPlay;
     string[] gameBoard;
+    GameObject endTurnButton;
 
 	void Start ()
     {
+        endTurnButton = GameObject.FindGameObjectWithTag("EndTurn");
         gameBoard = new string[6];
         //Request to load information from the server
         new GetChallengeRequest().SetChallengeInstanceId(TurnManager.instance.challengeInstanceId).Send((response) =>
@@ -89,6 +91,7 @@ public class PlayerControl : MonoBehaviour
                 if(hit.collider.GetComponent<Renderer>().material.color == Color.blue)
                 {
                     TurnManager.instance.player.transform.position = new Vector3(hit.collider.transform.position.x, 1, hit.collider.transform.position.z);
+                    endTurnButton.GetComponent<EndTurnUI>().SetVisibility(true);
                 }
             }
         }

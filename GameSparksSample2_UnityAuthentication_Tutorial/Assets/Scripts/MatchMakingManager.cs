@@ -27,9 +27,11 @@ public class MatchMakingManager : MonoBehaviour
     string opponentId;
     string opponentName;
     GameObject popUp;
+    GameObject matchMakingButton;
     
     void Start()
     {
+        matchMakingButton = GameObject.FindGameObjectWithTag("MatchMaking");
         //Observer to look for a match
         GameSparks.Api.Messages.MatchFoundMessage.Listener += OnMatchFound;
         debug = GameObject.FindGameObjectWithTag("Debug");
@@ -47,7 +49,7 @@ public class MatchMakingManager : MonoBehaviour
         }
 	}
 
-    void RankedMatch()
+    public void RankedMatch()
     {
         //Look for a potential opponent for a RankedMatch
         new GameSparks.Api.Requests.MatchmakingRequest().SetMatchShortCode("RankedMatch").SetSkill(100).Send((response) =>
@@ -161,6 +163,10 @@ public class MatchMakingManager : MonoBehaviour
             if(index > 0)
             {
                 SpawnPopUp();
+            }
+            else if(index == 0)
+            {
+                matchMakingButton.GetComponent<MatchMakingUI>().SetVisibility(true);
             }
         });
     }

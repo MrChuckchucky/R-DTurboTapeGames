@@ -4,9 +4,11 @@ using System.Collections;
 public class ContinueChallenge : MonoBehaviour
 {
     GameObject me;
+    GameObject matchMakingButton;
 
 	void Start ()
     {
+        matchMakingButton = GameObject.FindGameObjectWithTag("MatchMaking");
         me = this.gameObject;
         Enable(false);
 	}
@@ -32,5 +34,6 @@ public class ContinueChallenge : MonoBehaviour
     {
         //Hide the buttons
         Enable(false);
+        matchMakingButton.GetComponent<MatchMakingUI>().SetVisibility(true);
     }
 }

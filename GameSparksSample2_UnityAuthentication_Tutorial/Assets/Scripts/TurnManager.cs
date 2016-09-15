@@ -18,7 +18,13 @@ public class TurnManager : MonoBehaviour
     int kill;
     public GameObject player;
     public GameObject opponent;
+    GameObject endTurnButton;
     public string challengeInstanceId = "";
+
+    void Start()
+    {
+        endTurnButton = GameObject.FindGameObjectWithTag("EndTurn");
+    }
 
     public void EndTurn()
     {
@@ -38,6 +44,7 @@ public class TurnManager : MonoBehaviour
                 GroundManager.instance.Reinit();
                 //Send a request every 10 seconds to check if the other player have played
                 player.GetComponent<PlayerControl>().StartCoroutine("Check");
+                endTurnButton.GetComponent<EndTurnUI>().SetVisibility(false);
             }
         });
     }
