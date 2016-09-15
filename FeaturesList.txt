@@ -1,4 +1,4 @@
-GameSparks 
+GameSparks client side
 
 	-MatchMaking => MatchMakingManager :
 		ContinueChallenge => void CurrentChallenge line 126 => if found, void SpawnPopUp line 174 to accept the first of them else SearchMatch
@@ -17,3 +17,13 @@ GameSparks
 	-Register/Authenticate
 		Register => RegisterPlayer_SampleScript => public void RegisterPlayerBttn line 19
 		Authenticate => AuthenticatePlayer_SampleScript => public void AuthenticatePlayerBttn line 18
+
+GameSparks server side
+
+	-MatchMaking => Configurator > Multiplayer > MatchMaking
+	-Challenge => Configurator > Multiplayer > Challenge
+	-TurnBased/GameState => Configurator > CloudCode > ChallengeEvent > LifeCount
+	-Register/Authenticate => Configurator > CloudCode > Responses > RegistrationResponse
+	-Informations => NoSQL
+	-Documentations/Tutorials => Learn
+	-Tickets/Questions => Support > Tickets status > All tickets (some tickets have the answer in the Observations file)
