@@ -52,7 +52,7 @@ public class MatchMakingManager : MonoBehaviour
     public void RankedMatch()
     {
         //Look for a potential opponent for a RankedMatch
-        new GameSparks.Api.Requests.MatchmakingRequest().SetMatchShortCode("RankedMatch").SetSkill(100).Send((response) =>
+        new GameSparks.Api.Requests.MatchmakingRequest().SetMatchShortCode("RankedMatch").SetSkill(LeaderboardScript.getPlayerRanking()).Send((response) =>
             {
                 if (!response.HasErrors)
                 {

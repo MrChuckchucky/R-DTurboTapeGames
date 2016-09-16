@@ -1,3 +1,10 @@
+Comment:
+	As the Login on facebook isn't done, we don't have a fully functional prototype.
+	The login via facebook could link GameSpark and Playfab without problem.
+	But if using the custom login of PlayFab, it doesn't work well with GameSparks
+	which require to be logged in GameSpark for the Matchmaking. So it would require
+	a duplication of accounts on both website.
+
 GameSparks 
 
 	-MatchMaking => MatchMakingManager :
@@ -17,3 +24,18 @@ GameSparks
 	-Register/Authenticate
 		Register => RegisterPlayer_SampleScript => public void RegisterPlayerBttn line 19
 		Authenticate => AuthenticatePlayer_SampleScript => public void AuthenticatePlayerBttn line 18
+
+
+PlayFab
+	-Login via Facebook :
+		Login => LoginFBGooglePanel, also use the FB class of the facebook SDK
+	
+	-Login/Register via PlayFab :
+		Login/Register => LoginRegPanel
+
+	-Rankings Update/Get :
+		Update => GameMenuPanel
+		Get => LeaderboardScript
+
+	-Elo Algorythm :
+		ELORanking
